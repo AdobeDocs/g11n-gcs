@@ -19,7 +19,10 @@ In this guide, the following terms will be used.
 
 | Glossary Term      | Definition                                                                                                                                                                                                                                   |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Org**            | An enterprise that's using Adobe products and services for globalization workflows.                                                                                                                                                          |
+| **orgId**            | An enterprise that's using Adobe products and services for globalization workflows.|
+| **tenantId**            |  The unique ID of the tenant within a customer org initiating localization workflows.|
+| **tenantName**            |  The name of the tenant within a customer org in the format org-name (sandbox-name) e.g. "Test Org (TestSandbox name)". It's only for information purpose.|
+| **serviceBaseUrl**            | This is the GCS service base url which the provider needs to call. For nld2 region customers, it'll be https://gcs-nld2.adobe.io and it'll be https://gcs.adobe.io otherwise. Provider service should use the value of serviceBaseUrl to get or complete GCS assets.|
 | **IMS Token**      | An Identity Management System (IMS) token for the user in an organization that allows them to be authenticated by Adobe. These users can then use the services and products to which the org is entitled.                                    |
 | **User**           | The end user in the Org who triggers the localization workflow. The user can trigger a task for localization, preview and approve a localized task.                                                                                          |
 | **Partner**        | Localization partner that the Org wants to work with. Partner might have an offline selection with Adobe. Once the contracts are signed, partner is authorized into the Globalization Content Service through the Adobe I/O.                 |
@@ -171,6 +174,10 @@ Here's your guide to onboarding on the Adobe I/O console and accessing the Globa
 ```java
 https://<events_on_ADOBE_io_path>/events/organizations/<unique_number>/integrations/<unique_number>/<unique_number>
 ```
+
+12. After the configuration is done, partner needs to share the following information (in step 10 of [this section](#partner-onboarding-the-complete-workflow)) with the GCS Support Team <gcs-partners@adobe.com> :
+     1. Technical Account Id
+     2. Organization Id
 
 # Build a Connector and Start Using Events and APIs
 
@@ -392,46 +399,53 @@ A typical event with event code **TRANSLATE** will have the following informatio
  {
      "eventCode": "TRANSLATE",
      "tenantId": "906E3A095D....30A495FD6@AdobeOrg_AJO_prod",
+     "tenantName": "<org-name> (<sandbox-name>)",
+     "serviceBaseUrl": "https://gcs.adobe.io",
      "orgId": "906E3A095....230A495FD6@AdobeOrg",
      "projectId": "HT-Test1",
      "taskId": "HT_240717_1",
      "sourceLocale": "en-US",
      "translationProviderOrgId": "988120836....DE0A495C5D@AdobeOrg",
-     "targetLocale": "ja-JP",
-     "url": "https://dummy-url-1.adobe.com"
+     "targetLocale": "ja-JP"
     }
 ```
 
 A typical event with event code **RE_TRANSLATE** will have the following information.
 
 ```java
-{
- "eventCode": "RE_TRANSLATE",
+
+ {"eventCode": "RE_TRANSLATE",
  "tenantId": "745F37C35E4B....49421B@AdobeOrg_AJO_prod",
+ "tenantName": "<org-name> (<sandbox-name>)",
+ "serviceBaseUrl": "https://gcs.adobe.io",
  "orgId": "745F37C35E4B....49421B@AdobeOrg",
  "projectId": "7b8ed7e5-b25c-4694-90e3-92eaab8b76f4",
  "taskId": "HT_9f1954ac-c56c-489c-83b8-3e656a9b73e5",
  "sourceLocale": "en-US",
- "translationProviderOrgId": "5BD819C5....00A494114@AdobeOrg",
  "targetLocale": "fr-FR",
  "assetName": "email_body_from_ajo.html",
- "assetUrl": https://gcsstorage1.blob.core.windows.net/gcsdev1/745F37C35E4B....49421B@AdobeOrg_AJO_prod/7b8ed7e5-b25c-4....3D&se=2024-05-03T23%3A49%3A13Z&sv=2019-02-02&sp=r&sr=b
-}
+ "assetUrl": "https://<Storage Account Name>.blob.core.windows.net/gcsdev1/745F37C35E4B....49421B@AdobeOrg_AJO_prod/7b8ed7e5-b25c-4....3D&se=2024-05-03T23%3A49%3A13Z&sv=2019-02-02&sp=r&sr=b",
+ "translationProviderOrgId": "5BD819C5....00A494114@AdobeOrg"}
+
 ```
 
-You can configure the following:
+Description of event fields:
 
-1. Define the **event code**: Trigger an event when the following action occurs:
-   1. **Translate**: Send an asset for localization
-   2. **Re-Translate:** Reject an asset locale and send it back for localization.
+- **eventCode**: Trigger an event when the following action occurs:
+   - **Translate**: Send an asset for localization
+   - **Re-Translate:**: Reject an asset locale and send it back for localization.
 
-2. Specify the **Tenant Id**: The unique ID of the tenant within a customer org initiating localization.
-3. Specify the **Organization Id**: The unique ID of the customer's org.
-4. Define the **project id** and **task id**.
-5. Set the **source locale** and **target locale**
-6. **assetName** is the name of the rejected asset.
-7. **assetUrl** is the individual URL of the rejected asset with reviewer's comments.
-8. **translation provider ID** is the org id of the provider.
+- **tenantId**: The unique ID of the tenant within a customer org initiating localization.
+- **tenantName**: The name of the tenant within a customer org.
+- **serviceBaseUrl**: GCS service base url which needs to be called i.e. https://gcs-nld2.adobe.io for nld2 region customers and https://gcs.adobe.io, by default.
+- **orgId**: The unique ID of the customer's org.
+- **projectId**: The unique id for the project under which tasks are created.
+- **taskId**: The unique id for the translation task.
+- **sourceLocale**: The source locale for the task.
+- **targetLocale**: The locale in which translation has to be done.
+- **assetName**: The name of the rejected asset.
+- **assetUrl**: The individual URL of the rejected asset with reviewer's comments.
+- **translationProviderOrgId**: The org id of the provider.
 
 ## Sample Acess Token
 

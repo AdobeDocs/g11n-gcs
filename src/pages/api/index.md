@@ -105,7 +105,7 @@ The following is the successful response with the 200 Response code.
         {
             "name": "<assetName>",
             "assetId": "<assetId>",
-            "sourceUrl": "https://gcsstorageprod.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<AssetName>.json?sig=TsQ2n...eBQ%3D&se=2023-12-07T15%3A49%3A24Z&sv=2019-02-02&sp=r&sr=b",
+            "sourceUrl": "https://<Storage Account Name>.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<AssetName>?sig=TsQ2n...eBQ%3D&se=2023-12-07T15%3A49%3A24Z&sv=2019-02-02&sp=r&sr=b",
             "status": "IN_TRANSLATION",
             "mimeType": "application/json",
             "createdDate": "2023-12-07T05:49:55.945Z",
@@ -119,7 +119,7 @@ The following is the successful response with the 200 Response code.
             "assetUrls": [
                 {
                     "locale": "en-US",
-                    "url": "https://gcsstorageprod.blob.core.windows.net/gcs/<tenant_id>/<ProjectId>/<TaskId>/normalized/<AssetName>.json/en-US/<AssetName>.json.xlf?sig=zi%2B5Z...EE%3D&se=2023-12-08T21%3A44%3A11Z&sv=2019-02-02&sp=r&sr=b",
+                    "url": "https://<Storage Account Name>.blob.core.windows.net/gcs/<tenant_id>/<ProjectId>/<TaskId>/normalized/<AssetName>/en-US/<AssetName>.xlf?sig=zi%2B5Z...EE%3D&se=2023-12-08T21%3A44%3A11Z&sv=2019-02-02&sp=r&sr=b",
                     "createdDate": "2023-12-07T05:50:04.958Z",
                     "urlType": "NORMALIZED"
                 }
@@ -145,7 +145,7 @@ Here are the key sections in the response:
 - **assetUrls/url**: It is important to note here is that the actual asset URL to be used by the partner for translation is the "url" parameter in the response object under "assetUrls", which is in NORMALIZED state. The unique object key to locate this asset is below,
 
 ```java
-<tenant_id>/<ProjectId>/<TaskId>/normalized/<AssetName>.json/en-US/<AssetName>.json.xlf
+<tenant_id>/<ProjectId>/<TaskId>/normalized/<AssetName>/en-US/<AssetName>.xlf
 ```
 
 > **Note**: To know more about the Get Asset API, see [Get All Assets in Swagger](https://gcscore-dev-va7.stage.cloud.adobe.io/swagger-ui/index.html#/Asset%20Service/getAssetsUsingGET).
@@ -159,7 +159,7 @@ Here, Object key referes to a location or unique path(in the GCS storage) for an
 
 ```java
 curl --request GET \
-  --url 'https://gcs.adobe.io/v1/assetContent?tenantId=<tenant_id>&objectKey=<tenant_id>/<ProjectId>/<TaskId>/normalized/<AssetName>.json/en-US/<AssetName>.json.xlf' \
+  --url 'https://gcs.adobe.io/v1/assetContent?tenantId=<tenant_id>&objectKey=<tenant_id>/<ProjectId>/<TaskId>/normalized/<AssetName>/en-US/<AssetName>.xlf' \
   --header 'Authorization: Bearer eyJhbGciOiJSU....' \
   --header 'x-api-key: <client_id>'
 ```
@@ -235,7 +235,7 @@ curl --request PUT \
   },
   "targetAssetUrl": {
     "locale": "<targetLocale>",
-    "url": "https://gcsstorageprod.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<LocalizedAssetName>.xlf?sig=5x2q..90hdbY%3D&se=2023-09-11T19%3A35%3A33Z&sv=2019-02-02&sp=r&sr=b",
+    "url": "https://<Storage Account Name>.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<LocalizedAssetName>.xlf?sig=5x2q..90hdbY%3D&se=2023-09-11T19%3A35%3A33Z&sv=2019-02-02&sp=r&sr=b",
     "urlType": "TRANSLATED"
   }
 }'
@@ -265,7 +265,7 @@ Here's a successful response:
     },
     "targetAssetUrl": {
         "locale": "ja-JP",
-        "url": "https://gcsstorageprod.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<LocalizedAssetName>.xlf?sig=5x2q..90hdbY%3D&se=2023-09-11T19%3A35%3A33Z&sv=2019-02-02&sp=r&sr=b",
+        "url": "https://<Storage Account Name>.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<LocalizedAssetName>.xlf?sig=5x2q..90hdbY%3D&se=2023-09-11T19%3A35%3A33Z&sv=2019-02-02&sp=r&sr=b",
         "urlType": "TRANSLATED"
     },
     "workflowInstanceId": "M:61df6ed2-d31f-4790-ab43-fae711dc4c60"
