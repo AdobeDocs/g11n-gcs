@@ -431,21 +431,21 @@ A typical event with event code **RE_TRANSLATE** will have the following informa
 
 Description of event fields:
 
-* **eventCode**: Trigger an event when the following action occurs:
-   * **Translate**: Send an asset for localization
-   * **Re-Translate:**: Reject an asset locale and send it back for localization.
+- **eventCode**: Trigger an event when the following action occurs:
+   - **Translate**: Send an asset for localization
+   - **Re-Translate:**: Reject an asset locale and send it back for localization.
 
-* **tenantId**: The unique ID of the tenant within a customer org initiating localization.
-* **tenantName**: The name of the tenant within a customer org.
-* **serviceBaseUrl**: GCS service base url which needs to be called i.e. https://gcs-nld2.adobe.io for nld2 region customers and https://gcs.adobe.io, by default.
-* **orgId**: The unique ID of the customer's org.
-* **projectId**: The unique id for the project under which tasks are created.
-* **taskId**: The unique id for the translation task.
-* **sourceLocale**: The source locale for the task.
-* **targetLocale**: The locale in which translation has to be done.
-* **assetName**: The name of the rejected asset.
-* **assetUrl**: The individual URL of the rejected asset with reviewer's comments.
-* **translationProviderOrgId**: The org id of the provider.
+- **tenantId**: The unique ID of the tenant within a customer org initiating localization.
+- **tenantName**: The name of the tenant within a customer org.
+- **serviceBaseUrl**: GCS service base url which needs to be called i.e. https://gcs-nld2.adobe.io for nld2 region customers and https://gcs.adobe.io, by default.
+- **orgId**: The unique ID of the customer's org.
+- **projectId**: The unique id for the project under which tasks are created.
+- **taskId**: The unique id for the translation task.
+- **sourceLocale**: The source locale for the task.
+- **targetLocale**: The locale in which translation has to be done.
+- **assetName**: The name of the rejected asset.
+- **assetUrl**: The individual URL of the rejected asset with reviewer's comments.
+- **translationProviderOrgId**: The org id of the provider.
 
 ## Sample Acess Token
 
