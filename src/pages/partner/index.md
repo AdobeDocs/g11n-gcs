@@ -424,7 +424,7 @@ A typical event with event code **RE_TRANSLATE** will have the following informa
  "sourceLocale": "en-US",
  "targetLocale": "fr-FR",
  "assetName": "email_body_from_ajo.html",
- "assetUrl": "https://gcsstorage1.blob.core.windows.net/gcsdev1/745F37C35E4B....49421B@AdobeOrg_AJO_prod/7b8ed7e5-b25c-4....3D&se=2024-05-03T23%3A49%3A13Z&sv=2019-02-02&sp=r&sr=b",
+ "assetUrl": "https://<Storage Account Name>.blob.core.windows.net/gcsdev1/745F37C35E4B....49421B@AdobeOrg_AJO_prod/7b8ed7e5-b25c-4....3D&se=2024-05-03T23%3A49%3A13Z&sv=2019-02-02&sp=r&sr=b",
  "translationProviderOrgId": "5BD819C5....00A494114@AdobeOrg"}
 
 ```
