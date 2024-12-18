@@ -105,7 +105,7 @@ The following is the successful response with the 200 Response code.
         {
             "name": "<assetName>",
             "assetId": "<assetId>",
-            "sourceUrl": "https://gcsstorageprod.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<AssetName>?sig=TsQ2n...eBQ%3D&se=2023-12-07T15%3A49%3A24Z&sv=2019-02-02&sp=r&sr=b",
+            "sourceUrl": "https://<Storage Account Name>.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<AssetName>?sig=TsQ2n...eBQ%3D&se=2023-12-07T15%3A49%3A24Z&sv=2019-02-02&sp=r&sr=b",
             "status": "IN_TRANSLATION",
             "mimeType": "application/json",
             "createdDate": "2023-12-07T05:49:55.945Z",
@@ -119,7 +119,7 @@ The following is the successful response with the 200 Response code.
             "assetUrls": [
                 {
                     "locale": "en-US",
-                    "url": "https://gcsstorageprod.blob.core.windows.net/gcs/<tenant_id>/<ProjectId>/<TaskId>/normalized/<AssetName>/en-US/<AssetName>.xlf?sig=zi%2B5Z...EE%3D&se=2023-12-08T21%3A44%3A11Z&sv=2019-02-02&sp=r&sr=b",
+                    "url": "https://<Storage Account Name>.blob.core.windows.net/gcs/<tenant_id>/<ProjectId>/<TaskId>/normalized/<AssetName>/en-US/<AssetName>.xlf?sig=zi%2B5Z...EE%3D&se=2023-12-08T21%3A44%3A11Z&sv=2019-02-02&sp=r&sr=b",
                     "createdDate": "2023-12-07T05:50:04.958Z",
                     "urlType": "NORMALIZED"
                 }
@@ -235,7 +235,7 @@ curl --request PUT \
   },
   "targetAssetUrl": {
     "locale": "<targetLocale>",
-    "url": "https://gcsstorageprod.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<LocalizedAssetName>.xlf?sig=5x2q..90hdbY%3D&se=2023-09-11T19%3A35%3A33Z&sv=2019-02-02&sp=r&sr=b",
+    "url": "https://<Storage Account Name>.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<LocalizedAssetName>.xlf?sig=5x2q..90hdbY%3D&se=2023-09-11T19%3A35%3A33Z&sv=2019-02-02&sp=r&sr=b",
     "urlType": "TRANSLATED"
   }
 }'
@@ -265,7 +265,7 @@ Here's a successful response:
     },
     "targetAssetUrl": {
         "locale": "ja-JP",
-        "url": "https://gcsstorageprod.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<LocalizedAssetName>.xlf?sig=5x2q..90hdbY%3D&se=2023-09-11T19%3A35%3A33Z&sv=2019-02-02&sp=r&sr=b",
+        "url": "https://<Storage Account Name>.blob.core.windows.net/gcs/uploadFiles/<tenant_id>/<LocalizedAssetName>.xlf?sig=5x2q..90hdbY%3D&se=2023-09-11T19%3A35%3A33Z&sv=2019-02-02&sp=r&sr=b",
         "urlType": "TRANSLATED"
     },
     "workflowInstanceId": "M:61df6ed2-d31f-4790-ab43-fae711dc4c60"
