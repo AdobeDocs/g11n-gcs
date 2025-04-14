@@ -178,6 +178,10 @@ https://<events_on_ADOBE_io_path>/events/organizations/<unique_number>/integrati
 12. After the configuration is done, partner needs to share the following information (in step 10 of [this section](#partner-onboarding-the-complete-workflow)) with the GCS Support Team <gcs-partners@adobe.com> :
      1. Technical Account Id
      2. Organization Id
+     3. Provider name that should be displayed under "Providers" list in Adobe products
+     4. Source locale if other than "en-US"
+     5. List of locales (in BCP-47 format) that will be translated by partner
+     6. URL of your service/company (optional)
 
 # Build a Connector and Start Using Events and APIs
 
@@ -239,6 +243,7 @@ public class SampleConsumer extends Thread {
   private static final String KEY_EVENTS = "events";
   private static final String KEY_EVENT = "event";
   private static final String KEY_BODY = "body";
+  private static final String TASK_ID = "taskId";
   private static final String KEY_EVENT_CODE = "eventCode";
   private static final String KEY_CLIENT_ID = "client_id";
   private static final String KEY_CLIENT_SECRET = "client_secret";
@@ -297,7 +302,10 @@ public class SampleConsumer extends Thread {
             String responseStr = EntityUtils.toString(entity);
             ObjectNode responseNode = mapper.readValue(responseStr, ObjectNode.class);
             logger.info(responseStr);
-            JsonNode gcsMsgNode = responseNode.get(KEY_EVENTS).get(0).get(KEY_EVENT).get(KEY_BODY);
+            Map<String, JsonNode> eventsByTaskId = parseEventsByTaskId(responseNode);
+            for (Map.Entry<String, JsonNode> entry : eventsByTaskId.entrySet()) {
+            String taskId = entry.getKey();
+            JsonNode gcsMsgNode = entry.getValue();
             String eventCode = gcsMsgNode.get(KEY_EVENT_CODE).asText();
             String gcsMsg = mapper.writeValueAsString(gcsMsgNode);
             logger.info("EventCode: {}, Message consumed:{}", eventCode, gcsMsg);
@@ -306,6 +314,7 @@ public class SampleConsumer extends Thread {
             } else if (RE_TRANSLATE.equalsIgnoreCase(eventCode)) {
               // Call re-translation api to make the task available to vendor
             }
+              }
             nextUrl = getNextUrl(linkHeaders, nextUrl);
           }
         } else if (statusCode == HttpStatus.SC_NO_CONTENT) {
@@ -327,9 +336,26 @@ public class SampleConsumer extends Thread {
         nextUrl = getNextUrl(linkHeaders, nextUrl);
       }
     }
+      }
 
-  }
+  public static Map<String, JsonNode> parseEventsByTaskId(JsonNode responseNode) {
+      Map<String, JsonNode> taskEventMap = new HashMap<>();
 
+        JsonNode eventsArray = responseNode.get(KEY_EVENTS);
+        if (eventsArray != null && eventsArray.isArray()) {
+            for (JsonNode eventWrapper : eventsArray) {
+                JsonNode event = eventWrapper.get(KEY_EVENT);
+                if (event != null) {
+                    JsonNode body = event.get(KEY_BODY);
+                    if (body != null && body.has(TASK_ID)) {
+                        String taskId = body.get(TASK_ID).asText();
+                        taskEventMap.put(taskId, body);
+                    }
+                }
+            }
+        }
+        return taskEventMap;
+    }
   public static String getAccessToken(String clientId, String clientSecret)
       throws IOException {
     HttpPost httpPost = new HttpPost("https://ims-na1-stg1.adobelogin.com/ims/token/v3");
