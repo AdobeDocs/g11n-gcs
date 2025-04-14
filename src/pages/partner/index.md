@@ -178,7 +178,7 @@ https://<events_on_ADOBE_io_path>/events/organizations/<unique_number>/integrati
 12. After the configuration is done, partner needs to share the following information (in step 10 of [this section](#partner-onboarding-the-complete-workflow)) with the GCS Support Team <gcs-partners@adobe.com> :
      1. Technical Account Id
      2. Organization Id
-     3. Provider name that they want to be displayed under "Providers" list in Adobe products
+     3. Provider name that should be displayed under "Providers" list in Adobe products
      4. Source locale if other than "en-US"
      5. List of locales (in BCP-47 format) that will be translated by partner
      6. URL of your service/company (optional)
