@@ -235,115 +235,115 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SampleConsumer extends Thread {
-  private static Logger = LoggerFactory.getLogger(SampleConsumer.class);
-  private static final String KEY_BEARER = "Bearer ";
-  private static final String KEY_X_API_KEY = "x-api-key";
-  private static final String KEY_X_IMS_ORG_ID = "x-ims-org-id";
-  private static final String KEY_LINK = "link";
-  private static final String KEY_EVENTS = "events";
-  private static final String KEY_EVENT = "event";
-  private static final String KEY_BODY = "body";
-  private static final String TASK_ID = "taskId";
-  private static final String KEY_EVENT_CODE = "eventCode";
-  private static final String KEY_CLIENT_ID = "client_id";
-  private static final String KEY_CLIENT_SECRET = "client_secret";
-  private static final String KEY_ACCESS_TOKEN = "access_token";
-  private static final String SCOPE = "scope";
-  private static final String GRANT_TYPE = "grant_type";
-  private static final String KEY_REL = "rel";
-  private static final String VAL_NEXT = "next";
-  private static final String LEVERAGE_TM = "LEVERAGE_TM";
-  private static final String UPDATE_TM = "UPDATE_TM";
-  private static final String TRANSLATE = "TRANSLATE";
-  private static final String PROJECT_UPDATE = "PROJECT_UPDATE";
-  private static final String KEY_RETRY_AFTER = "retry-after";
-  static String eventBaseUrl = "https://events-stage-va6.adobe.io/events/";
-  static String eventFetchUrl =
-      "organizations/XXXXX/integrations/XXXXX/864cXXXXXXXXXXXXXXXX080c?limit=1&latest=true";
-  static String eventNextUrl =
-      "organizations/XXXXX/integrations/XXXXX/864cc8d5-XXXXXXXXXXXXXXX0c?since=";
-  static String eventClientId = "4bc0eXXXXXXXXXXXXXXX657a1";
-  static String eventClientSecret = "<client_secret>";
-  static String eventImsOrgId = "<your_id>@AdobeOrg";
-  static String eventAccessToken = "SampleAccessToken";
-  static int eventFetchInterval = 1000;
-  static  String scopeValue = "adobeio_api,openid,read_client_secret,AdobeID,read_organizations,additional_info.roles,manage_client_secrets,additional_info.projectedProductContext";
-  static  String grantType = "client_credentials";
-  private static CloseableHttpClient imsClient = HttpClientBuilder.create().build();
-  private CloseableHttpClient ioEventClient;
-  private static ObjectMapper mapper = new ObjectMapper();
+    private static Logger = LoggerFactory.getLogger(SampleConsumer.class);
+    private static final String KEY_BEARER = "Bearer ";
+    private static final String KEY_X_API_KEY = "x-api-key";
+    private static final String KEY_X_IMS_ORG_ID = "x-ims-org-id";
+    private static final String KEY_LINK = "link";
+    private static final String KEY_EVENTS = "events";
+    private static final String KEY_EVENT = "event";
+    private static final String KEY_BODY = "body";
+    private static final String TASK_ID = "taskId";
+    private static final String KEY_EVENT_CODE = "eventCode";
+    private static final String KEY_CLIENT_ID = "client_id";
+    private static final String KEY_CLIENT_SECRET = "client_secret";
+    private static final String KEY_ACCESS_TOKEN = "access_token";
+    private static final String SCOPE = "scope";
+    private static final String GRANT_TYPE = "grant_type";
+    private static final String KEY_REL = "rel";
+    private static final String VAL_NEXT = "next";
+    private static final String LEVERAGE_TM = "LEVERAGE_TM";
+    private static final String UPDATE_TM = "UPDATE_TM";
+    private static final String TRANSLATE = "TRANSLATE";
+    private static final String PROJECT_UPDATE = "PROJECT_UPDATE";
+    private static final String KEY_RETRY_AFTER = "retry-after";
+    static String eventBaseUrl = "https://events-stage-va6.adobe.io/events/";
+    static String eventFetchUrl =
+        "organizations/XXXXX/integrations/XXXXX/864cXXXXXXXXXXXXXXXX080c?limit=1&latest=true";
+    static String eventNextUrl =
+        "organizations/XXXXX/integrations/XXXXX/864cc8d5-XXXXXXXXXXXXXXX0c?since=";
+    static String eventClientId = "4bc0eXXXXXXXXXXXXXXX657a1";
+    static String eventClientSecret = "<client_secret>";
+    static String eventImsOrgId = "<your_id>@AdobeOrg";
+    static String eventAccessToken = "SampleAccessToken";
+    static int eventFetchInterval = 1000;
+    static String scopeValue = "adobeio_api,openid,read_client_secret,AdobeID,read_organizations,additional_info.roles,manage_client_secrets,additional_info.projectedProductContext";
+    static String grantType = "client_credentials";
+    private static CloseableHttpClient imsClient = HttpClientBuilder.create().build();
+    private CloseableHttpClient ioEventClient;
+    private static ObjectMapper mapper = new ObjectMapper();
 
-  public void run() {
-    String ioEventUrl;
-    String nextUrl = null;
-    int count = 0;
-    while (true) {
-      if (StringUtils.isEmpty(nextUrl)) {
-        ioEventUrl = eventBaseUrl + eventFetchUrl;
-      } else {
-        ioEventUrl = eventBaseUrl + nextUrl;
-      }
-      if (count % 1000 == 0) {
-        logger.debug("Calling url = {}", ioEventUrl);
-        count = 0;
-      }
-      count++;
-      HttpGet httpGet = new HttpGet(ioEventUrl);
-      httpGet.addHeader(HttpHeaders.AUTHORIZATION, KEY_BEARER + eventImsOrgId);
-      httpGet.addHeader(KEY_X_API_KEY, eventClientId);
-      httpGet.addHeader(KEY_X_IMS_ORG_ID, eventImsOrgId);
-      Header[] linkHeaders = null;
-      try (CloseableHttpResponse response = ioEventClient.execute(httpGet)) {
-        int statusCode = response.getStatusLine().getStatusCode();
-        linkHeaders = response.getHeaders(KEY_LINK);
-        if (statusCode == HttpStatus.SC_OK) {
-          HttpEntity entity = response.getEntity();
-          if (entity != null) {
-            String responseStr = EntityUtils.toString(entity);
-            ObjectNode responseNode = mapper.readValue(responseStr, ObjectNode.class);
-            logger.info(responseStr);
-            Map<String, JsonNode> eventsByTaskId = parseEventsByTaskId(responseNode);
-            for (Map.Entry<String, JsonNode> entry : eventsByTaskId.entrySet()) {
-            String taskId = entry.getKey();
-            JsonNode gcsMsgNode = entry.getValue();
-            String eventCode = gcsMsgNode.get(KEY_EVENT_CODE).asText();
-            String gcsMsg = mapper.writeValueAsString(gcsMsgNode);
-            logger.info("EventCode: {}, Message consumed:{}", eventCode, gcsMsg);
-            if (TRANSLATE.equalsIgnoreCase(eventCode)) {
-              // Call translation api to make the task available to vendor
-            } else if (RE_TRANSLATE.equalsIgnoreCase(eventCode)) {
-              // Call re-translation api to make the task available to vendor
+    public void run() {
+        String ioEventUrl;
+        String nextUrl = null;
+        int count = 0;
+        while (true) {
+            if (StringUtils.isEmpty(nextUrl)) {
+                ioEventUrl = eventBaseUrl + eventFetchUrl;
+            } else {
+                ioEventUrl = eventBaseUrl + nextUrl;
             }
-              }
-            nextUrl = getNextUrl(linkHeaders, nextUrl);
-          }
-        } else if (statusCode == HttpStatus.SC_NO_CONTENT) {
-          Header retryHeader = response.getFirstHeader(KEY_RETRY_AFTER);
-          if (retryHeader != null) {
-            Thread.sleep(Long.parseLong(retryHeader.getValue()));
-          }
-          nextUrl = getNextUrl(linkHeaders, nextUrl);
-        } else if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
-          eventAccessToken = getAccessToken(eventClientId, eventClientSecret);
-          logger.debug("Access Token for event generated again successfully");
-        } else {
-          logger.error("{} \t {}", EntityUtils.toString(response.getEntity()),
-              response.getStatusLine().getStatusCode());
+            if (count % 1000 == 0) {
+                logger.debug("Calling url = {}", ioEventUrl);
+                count = 0;
+            }
+            count++;
+            HttpGet httpGet = new HttpGet(ioEventUrl);
+            httpGet.addHeader(HttpHeaders.AUTHORIZATION, KEY_BEARER + eventImsOrgId);
+            httpGet.addHeader(KEY_X_API_KEY, eventClientId);
+            httpGet.addHeader(KEY_X_IMS_ORG_ID, eventImsOrgId);
+            Header[] linkHeaders = null;
+            try (CloseableHttpResponse response = ioEventClient.execute(httpGet)) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                linkHeaders = response.getHeaders(KEY_LINK);
+                if (statusCode == HttpStatus.SC_OK) {
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        String responseStr = EntityUtils.toString(entity);
+                        ObjectNode responseNode = mapper.readValue(responseStr, ObjectNode.class);
+                        logger.info(responseStr);
+                        Map < String, JsonNode > eventsByTaskId = parseEventsByTaskId(responseNode);
+                        for (Map.Entry < String, JsonNode > entry: eventsByTaskId.entrySet()) {
+                            String taskId = entry.getKey();
+                            JsonNode gcsMsgNode = entry.getValue();
+                            String eventCode = gcsMsgNode.get(KEY_EVENT_CODE).asText();
+                            String gcsMsg = mapper.writeValueAsString(gcsMsgNode);
+                            logger.info("EventCode: {}, Message consumed:{}", eventCode, gcsMsg);
+                            if (TRANSLATE.equalsIgnoreCase(eventCode)) {
+                                // Call translation api to make the task available to vendor
+                            } else if (RE_TRANSLATE.equalsIgnoreCase(eventCode)) {
+                                // Call re-translation api to make the task available to vendor
+                            }
+                        }
+                        nextUrl = getNextUrl(linkHeaders, nextUrl);
+                    }
+                } else if (statusCode == HttpStatus.SC_NO_CONTENT) {
+                    Header retryHeader = response.getFirstHeader(KEY_RETRY_AFTER);
+                    if (retryHeader != null) {
+                        Thread.sleep(Long.parseLong(retryHeader.getValue()));
+                    }
+                    nextUrl = getNextUrl(linkHeaders, nextUrl);
+                } else if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
+                    eventAccessToken = getAccessToken(eventClientId, eventClientSecret);
+                    logger.debug("Access Token for event generated again successfully");
+                } else {
+                    logger.error("{} \t {}", EntityUtils.toString(response.getEntity()),
+                        response.getStatusLine().getStatusCode());
+                }
+                Thread.sleep(eventFetchInterval);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                nextUrl = getNextUrl(linkHeaders, nextUrl);
+            }
         }
-        Thread.sleep(eventFetchInterval);
-      } catch (Exception e) {
-        logger.error(e.getMessage(), e);
-        nextUrl = getNextUrl(linkHeaders, nextUrl);
-      }
     }
-      }
 
-  public static Map<String, JsonNode> parseEventsByTaskId(JsonNode responseNode) {
-      Map<String, JsonNode> taskEventMap = new HashMap<>();
+    public static Map < String, JsonNode > parseEventsByTaskId(JsonNode responseNode) {
+        Map < String, JsonNode > taskEventMap = new HashMap < > ();
 
         JsonNode eventsArray = responseNode.get(KEY_EVENTS);
         if (eventsArray != null && eventsArray.isArray()) {
-            for (JsonNode eventWrapper : eventsArray) {
+            for (JsonNode eventWrapper: eventsArray) {
                 JsonNode event = eventWrapper.get(KEY_EVENT);
                 if (event != null) {
                     JsonNode body = event.get(KEY_BODY);
@@ -356,46 +356,46 @@ public class SampleConsumer extends Thread {
         }
         return taskEventMap;
     }
-  public static String getAccessToken(String clientId, String clientSecret)
-      throws IOException {
-    HttpPost httpPost = new HttpPost("https://ims-na1-stg1.adobelogin.com/ims/token/v3");
-    httpPost.addHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
-    HttpEntity requestEntity = EntityBuilder.create()
-        .setContentType(ContentType.APPLICATION_FORM_URLENCODED.withCharset(Consts.UTF_8))
-        .setParameters(
-            new BasicNameValuePair(KEY_CLIENT_ID, clientId),
-            new BasicNameValuePair(SCOPE, scopeValue),
-            new BasicNameValuePair(KEY_CLIENT_SECRET, clientSecret),
-            new BasicNameValuePair(GRANT_TYPE, grantType)
+    public static String getAccessToken(String clientId, String clientSecret)
+    throws IOException {
+        HttpPost httpPost = new HttpPost("https://ims-na1-stg1.adobelogin.com/ims/token/v3");
+        httpPost.addHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        HttpEntity requestEntity = EntityBuilder.create()
+            .setContentType(ContentType.APPLICATION_FORM_URLENCODED.withCharset(Consts.UTF_8))
+            .setParameters(
+                new BasicNameValuePair(KEY_CLIENT_ID, clientId),
+                new BasicNameValuePair(SCOPE, scopeValue),
+                new BasicNameValuePair(KEY_CLIENT_SECRET, clientSecret),
+                new BasicNameValuePair(GRANT_TYPE, grantType)
             )
-        .build();
-    httpPost.setEntity(requestEntity);
-    try (CloseableHttpResponse response = imsClient.execute(httpPost)) {
-      if (response.getStatusLine().getStatusCode() == 200) {
-        HttpEntity responseEntity = response.getEntity();
-        if (responseEntity != null) {
-          String responseStr = EntityUtils.toString(response.getEntity());
-          ObjectNode responseNode = mapper.readValue(responseStr, ObjectNode.class);
-          return responseNode.get(KEY_ACCESS_TOKEN).asText();
-        } else {
-          throw new IOException("Empty response entity");
+            .build();
+        httpPost.setEntity(requestEntity);
+        try (CloseableHttpResponse response = imsClient.execute(httpPost)) {
+            if (response.getStatusLine().getStatusCode() == 200) {
+                HttpEntity responseEntity = response.getEntity();
+                if (responseEntity != null) {
+                    String responseStr = EntityUtils.toString(response.getEntity());
+                    ObjectNode responseNode = mapper.readValue(responseStr, ObjectNode.class);
+                    return responseNode.get(KEY_ACCESS_TOKEN).asText();
+                } else {
+                    throw new IOException("Empty response entity");
+                }
+            } else {
+                throw new IOException(EntityUtils.toString(response.getEntity()));
+            }
         }
-      } else {
-        throw new IOException(EntityUtils.toString(response.getEntity()));
-      }
     }
-  }
 
-  private String getNextUrl(Header[] headers, String currentUrl) {
-    for (Header : headers) {
-      HeaderElement firstElement = header.getElements()[0];
-      NameValuePair pair = firstElement.getParameterByName(KEY_REL);
-      if (pair != null && VAL_NEXT.equals(pair.getValue())) {
-        return eventNextUrl + firstElement.getValue().replace(">", "");
-      }
+    private String getNextUrl(Header[] headers, String currentUrl) {
+        for (Header: headers) {
+            HeaderElement firstElement = header.getElements()[0];
+            NameValuePair pair = firstElement.getParameterByName(KEY_REL);
+            if (pair != null && VAL_NEXT.equals(pair.getValue())) {
+                return eventNextUrl + firstElement.getValue().replace(">", "");
+            }
+        }
+        return currentUrl;
     }
-    return currentUrl;
-  }
 }
 ```
 
