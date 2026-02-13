@@ -1,0 +1,40 @@
+{
+  "total": 8,
+  "offset": 0,
+  "limit": 8,
+  "data": [
+    {
+      "Source": "/gcs",
+      "Destination": "/gcs/"
+    },
+    {
+      "Source": "/gcs/index",
+      "Destination": "/gcs/"
+    },
+    {
+      "Source": "/gcs/partner",
+      "Destination": "/gcs/partner/"
+    },
+    {
+      "Source": "/gcs/partner/index",
+      "Destination": "/gcs/partner/"
+    },
+    {
+      "Source": "/gcs/overview",
+      "Destination": "/gcs/overview/"
+    },
+    {
+      "Source": "/gcs/overview/index",
+      "Destination": "/gcs/overview/"
+    },
+    {
+      "Source": "/gcs/api",
+      "Destination": "/gcs/api/"
+    },
+    {
+      "Source": "/gcs/api/index",
+      "Destination": "/gcs/api/"
+    }
+  ],
+  ":type": "sheet"
+}
